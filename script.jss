@@ -1,139 +1,155 @@
-const CORRECT_PIN = '123';
-const AUTO_FULLSCREEN = true;
-const VIBRATE_ON_WRONG = true;
-const VIBRATE_PATTERN = [180, 90, 180, 90, 300];
-
-document.getElementById('pinHint').textContent = CORRECT_PIN;
-
-const logEl = document.getElementById('log');
-const progEl = document.getElementById('progress');
-const pctEl = document.getElementById('percent');
-const statusEl = document.getElementById('status');
-const lockedEl = document.getElementById('locked');
-const flash = document.getElementById('neonFlash');
-
-const lines = [
-  '[..] BOOTCHAIN INIT',
-  '[..] RUNNING NETWORK SWEEP',
-  '[..] DISCOVERED 8 HOSTS',
-  '[..] DEPLOYING AGENT',
-  '[..] AGENT ONLINE',
-  '[..] STREAMING METADATA',
-  '[..] CHECKSUMS OK',
-  '[..] EXFILTRATION COMPLETE'
-];
-
-let pct = 0;
-let attempts = 0;
-
-function wait(ms){ return new Promise(r=>setTimeout(r, ms)); }
-
-async function typeLine(text){
-  return new Promise(res=>{
-    let i=0;
-    const interval=setInterval(()=>{
-      logEl.textContent += text[i]||'';
-      i++;
-      if(i>text.length){clearInterval(interval);logEl.textContent+='\n';res();}
-    },15);
-  });
+:root {
+  --bg:#030405;
+  --panel:#071013;
+  --neon:#39ff14;
+  --neon-2:#7cff5a;
+  --accent:#00ffd5;
+  --muted:#98a2a8;
+  --glass: rgba(255,255,255,0.03);
 }
 
-async function runSequence(){
-  for(let i=0;i<lines.length;i++){
-    await typeLine(lines[i]);
-    pct+=15; if(pct>98)pct=98;
-    progEl.style.width=pct+'%';
-    pctEl.textContent=pct+'%';
-    statusEl.textContent=lines[i];
-    if(Math.random()>0.6) triggerFlash(100,0.15);
-    await wait(300);
-  }
-  progEl.style.width='100%';
-  pctEl.textContent='100%';
-  statusEl.textContent='complete';
-  setTimeout(showLockedScreen,500);
+*{box-sizing:border-box}
+html,body {
+  height:100%;
+  margin:0;
+  font-family: ui-monospace, Menlo, Monaco, "Courier New", monospace;
+  background: radial-gradient(ellipse at top left,#041018 0%, #010204 60%);
+  color:var(--neon);
 }
 
-function triggerFlash(dur=100,op=0.14){
-  flash.style.opacity=String(op);
-  setTimeout(()=>flash.style.opacity='0',dur);
+.wrap {
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
 }
 
-function showLockedScreen(){
-  lockedEl.style.display='block';
-  if(AUTO_FULLSCREEN&&document.documentElement.requestFullscreen){
-    document.documentElement.requestFullscreen().catch(()=>{});
-  }
-  try{playNeonAlarm();}catch(e){}
+.terminal {
+  width:100%;
+  max-width:980px;
+  border-radius:14px;
+  padding:26px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  box-shadow: 0 20px 80px rgba(0,0,0,0.7), inset 0 0 80px rgba(57,255,20,0.03);
+  border: 1px solid rgba(57,255,20,0.06);
+  position:relative;
+  overflow:hidden;
 }
 
-let audioCtx;
-function ensureAudio(){
-  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-  return audioCtx;
+/* scanning lines */
+.terminal::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.03) 50%, rgba(0,0,0,0));
+  pointer-events:none;
 }
 
-function playNeonAlarm(){
-  const ctx=ensureAudio();
-  const now=ctx.currentTime;
-  const master=ctx.createGain();
-  master.gain.setValueAtTime(0.3,now);
-  master.connect(ctx.destination);
+.brand { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.logo {
+  width:36px; height:36px; border-radius:8px;
+  background:linear-gradient(135deg,var(--neon),#00ffa8);
+}
+.title { font-size:16px; color:var(--neon-2); letter-spacing:2px; font-weight:700 }
 
-  const osc=ctx.createOscillator();
-  osc.type='sawtooth';
-  osc.frequency.setValueAtTime(200,now);
-  const gain=ctx.createGain();
-  gain.gain.setValueAtTime(0.2,now);
-  osc.connect(gain);
-  gain.connect(master);
-  osc.start(now);
-  osc.stop(now+2);
+.warning {
+  color:#ff5d5d; font-weight:800; letter-spacing:2px;
+  font-size:13px; margin-bottom:6px;
 }
 
-const unlockBtn=document.getElementById('unlockBtn');
-const modal=document.getElementById('modal');
-const pinInput=document.getElementById('pinInput');
-const okBtn=document.getElementById('okBtn');
-const cancelBtn=document.getElementById('cancelBtn');
-const errEl=document.getElementById('err');
-
-unlockBtn.addEventListener('click',openModal);
-cancelBtn.addEventListener('click',closeModal);
-okBtn.addEventListener('click',submitPin);
-
-function openModal(){
-  pinInput.value='';
-  errEl.textContent='';
-  modal.style.display='flex';
-  setTimeout(()=>pinInput.focus(),150);
+pre {
+  margin:10px 0 0;
+  white-space:pre-wrap;
+  font-size:15px;
+  line-height:1.45;
+  color:var(--neon);
 }
 
-function closeModal(){ modal.style.display='none'; }
-
-function submitPin(){
-  if(pinInput.value.trim()===CORRECT_PIN){
-    onSuccess();
-  }else{
-    attempts++;
-    if(VIBRATE_ON_WRONG&&navigator.vibrate)navigator.vibrate(VIBRATE_PATTERN);
-    errEl.textContent='PIN salah';
-    document.getElementById('dialog').classList.add('shake');
-    setTimeout(()=>document.getElementById('dialog').classList.remove('shake'),400);
-  }
+.progress-wrap {
+  height:12px;
+  background:rgba(255,255,255,0.02);
+  border-radius:999px;
+  margin-top:14px;
+  overflow:hidden;
 }
 
-function onSuccess(){
-  closeModal();
-  if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
-  lockedEl.innerHTML=`
-    <div style="padding:18px;text-align:center">
-      <h2 style="color:var(--neon-2);margin:0">✓ SYSTEM UNLOCKED</h2>
-      <p style="color:var(--muted);margin-top:8px">Semua file dipulihkan. Ini hanya simulasi — tidak ada yang dirusak.</p>
-      <div style="margin-top:14px"><button onclick="location.reload()" class="btn-unlock">Tutup</button></div>
-    </div>
-  `;
+.progress {
+  height:100%; width:0%;
+  border-radius:999px;
+  transition:width 500ms;
+  background:linear-gradient(90deg, rgba(57,255,20,0.95), rgba(120,255,120,0.85));
 }
 
-runSequence();
+.status-row {
+  display:flex; justify-content:space-between;
+  margin-top:8px; font-size:13px; color:var(--muted);
+}
+
+.locked {
+  display:none; margin-top:18px; text-align:center;
+  padding:34px; border-radius:12px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(255,255,255,0.01));
+  border:1px solid rgba(57,255,20,0.04);
+}
+
+.locked .big {
+  font-size:44px; letter-spacing:8px; color:var(--neon);
+}
+
+.locked .sub { color:var(--muted); margin-top:8px }
+
+.btn-unlock {
+  margin-top:20px; padding:12px 26px;
+  border-radius:12px; background:linear-gradient(90deg,#00ffa8,#39ff14);
+  border:0; font-weight:800; color:#001; cursor:pointer;
+}
+
+.controls {
+  display:flex; gap:12px; align-items:center; justify-content:center; margin-top:14px;
+}
+.fs-btn {
+  padding:8px 12px; border-radius:10px;
+  border:1px solid rgba(255,255,255,0.04);
+  background:transparent; color:var(--muted); cursor:pointer;
+}
+
+.modal {
+  position:fixed; inset:0; display:none;
+  align-items:center; justify-content:center;
+  background:rgba(1,2,3,0.85); z-index:60;
+}
+.dialog {
+  width:360px; background:rgba(0,0,0,0.45);
+  border-radius:12px; padding:18px; text-align:center;
+}
+
+.pin {
+  width:100%; padding:12px;
+  border-radius:10px; border:1px solid rgba(255,255,255,0.04);
+  background:transparent; color:var(--neon); font-size:20px;
+  text-align:center; letter-spacing:12px;
+}
+
+.btn { padding:10px 14px; border-radius:8px; border:0; cursor:pointer; font-weight:700 }
+.btn-ok { background:linear-gradient(90deg,#39ff14,#7cff5a); color:#001 }
+.btn-cancel { background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--muted) }
+
+.flash {
+  position:absolute; inset:0; pointer-events:none;
+  mix-blend-mode:screen; opacity:0;
+  background: radial-gradient(circle at 10% 10%, rgba(57,255,20,0.06), transparent 8%),
+              radial-gradient(circle at 90% 80%, rgba(0,255,218,0.04), transparent 12%);
+  transition:opacity 140ms ease;
+}
+
+@keyframes shake {
+  0%{transform:translateX(0)} 20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)} 60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)} 100%{transform:translateX(0)}
+}
+.shake { animation:shake 420ms ease }
+.flicker { animation:flick 950ms linear infinite }
+@keyframes flick { 0%{opacity:1}30%{opacity:0.6}60%{opacity:0.95}100%{opacity:1} }
+
+.muted { color:var(--muted); font-size:12px; margin-top:8px }  
