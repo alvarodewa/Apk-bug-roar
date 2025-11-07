@@ -1,155 +1,121 @@
-  :root {
-  --bg:#030405;
-  --panel:#071013;
-  --neon:#39ff14;
-  --neon-2:#7cff5a;
-  --accent:#00ffd5;
-  --muted:#98a2a8;
-  --glass: rgba(255,255,255,0.03);
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Orbitron', sans-serif;
 }
 
-*{box-sizing:border-box}
-html,body {
-  height:100%;
-  margin:0;
-  font-family: ui-monospace, Menlo, Monaco, "Courier New", monospace;
-  background: radial-gradient(ellipse at top left,#041018 0%, #010204 60%);
-  color:var(--neon);
+body {
+  background: radial-gradient(circle at top, #020305, #000);
+  color: #39ff14;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.wrap {
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
+.container {
+  background: rgba(10, 20, 20, 0.9);
+  border: 2px solid #0ff;
+  border-radius: 16px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 20px #00f6ff;
+  text-align: center;
 }
 
-.terminal {
-  width:100%;
-  max-width:980px;
-  border-radius:14px;
-  padding:26px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  box-shadow: 0 20px 80px rgba(0,0,0,0.7), inset 0 0 80px rgba(57,255,20,0.03);
-  border: 1px solid rgba(57,255,20,0.06);
-  position:relative;
-  overflow:hidden;
+h1 {
+  font-size: 2rem;
+  color: #00ffff;
+  text-shadow: 0 0 10px #00f6ff;
+  margin-bottom: 10px;
 }
 
-/* scanning lines */
-.terminal::before {
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image:linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.03) 50%, rgba(0,0,0,0));
-  pointer-events:none;
+input, select {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: rgba(0, 255, 255, 0.1);
+  color: #39ff14;
+  text-align: center;
 }
 
-.brand { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
-.logo {
-  width:36px; height:36px; border-radius:8px;
-  background:linear-gradient(135deg,var(--neon),#00ffa8);
-}
-.title { font-size:16px; color:var(--neon-2); letter-spacing:2px; font-weight:700 }
-
-.warning {
-  color:#ff5d5d; font-weight:800; letter-spacing:2px;
-  font-size:13px; margin-bottom:6px;
-}
-
-pre {
-  margin:10px 0 0;
-  white-space:pre-wrap;
-  font-size:15px;
-  line-height:1.45;
-  color:var(--neon);
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #0077ff, #ff004c);
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.3s;
 }
 
-.progress-wrap {
-  height:12px;
-  background:rgba(255,255,255,0.02);
-  border-radius:999px;
-  margin-top:14px;
-  overflow:hidden;
+button:hover {
+  opacity: 0.8;
 }
 
-.progress {
-  height:100%; width:0%;
-  border-radius:999px;
-  transition:width 500ms;
-  background:linear-gradient(90deg, rgba(57,255,20,0.95), rgba(120,255,120,0.85));
+.hidden {
+  display: none;
 }
 
-.status-row {
-  display:flex; justify-content:space-between;
-  margin-top:8px; font-size:13px; color:var(--muted);
+.console {
+  margin-top: 20px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid #00ffff;
+  border-radius: 8px;
+  padding: 10px;
+  color: #00ff99;
+  font-size: 0.9rem;
+  text-align: left;
+  height: 100px;
+  overflow-y: auto;
 }
 
-.locked {
-  display:none; margin-top:18px; text-align:center;
-  padding:34px; border-radius:12px;
-  background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(255,255,255,0.01));
-  border:1px solid rgba(57,255,20,0.04);
+.error {
+  color: #ff4444;
+  text-shadow: 0 0 5px red;
+  margin-top: 8px;
+  font-size: 0.9rem;
 }
 
-.locked .big {
-  font-size:44px; letter-spacing:8px; color:var(--neon);
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.locked .sub { color:var(--muted); margin-top:8px }
-
-.btn-unlock {
-  margin-top:20px; padding:12px 26px;
-  border-radius:12px; background:linear-gradient(90deg,#00ffa8,#39ff14);
-  border:0; font-weight:800; color:#001; cursor:pointer;
+.logout {
+  background: linear-gradient(90deg, #ff004c, #7a0000);
 }
 
-.controls {
-  display:flex; gap:12px; align-items:center; justify-content:center; margin-top:14px;
-}
-.fs-btn {
-  padding:8px 12px; border-radius:10px;
-  border:1px solid rgba(255,255,255,0.04);
-  background:transparent; color:var(--muted); cursor:pointer;
-}
-
-.modal {
-  position:fixed; inset:0; display:none;
-  align-items:center; justify-content:center;
-  background:rgba(1,2,3,0.85); z-index:60;
-}
-.dialog {
-  width:360px; background:rgba(0,0,0,0.45);
-  border-radius:12px; padding:18px; text-align:center;
+#notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 255, 0, 0.9);
+  color: black;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  box-shadow: 0 0 15px #00ff00;
+  animation: fadeInOut 3s ease forwards;
+  z-index: 1000;
 }
 
-.pin {
-  width:100%; padding:12px;
-  border-radius:10px; border:1px solid rgba(255,255,255,0.04);
-  background:transparent; color:var(--neon); font-size:20px;
-  text-align:center; letter-spacing:12px;
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -20px); }
+  10%, 90% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -20px); }
 }
-
-.btn { padding:10px 14px; border-radius:8px; border:0; cursor:pointer; font-weight:700 }
-.btn-ok { background:linear-gradient(90deg,#39ff14,#7cff5a); color:#001 }
-.btn-cancel { background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--muted) }
-
-.flash {
-  position:absolute; inset:0; pointer-events:none;
-  mix-blend-mode:screen; opacity:0;
-  background: radial-gradient(circle at 10% 10%, rgba(57,255,20,0.06), transparent 8%),
-              radial-gradient(circle at 90% 80%, rgba(0,255,218,0.04), transparent 12%);
-  transition:opacity 140ms ease;
-}
-
-@keyframes shake {
-  0%{transform:translateX(0)} 20%{transform:translateX(-8px)}
-  40%{transform:translateX(8px)} 60%{transform:translateX(-6px)}
-  80%{transform:translateX(6px)} 100%{transform:translateX(0)}
-}
-.shake { animation:shake 420ms ease }
-.flicker { animation:flick 950ms linear infinite }
-@keyframes flick { 0%{opacity:1}30%{opacity:0.6}60%{opacity:0.95}100%{opacity:1} }
-
-.muted { color:var(--muted); font-size:12px; margin-top:8px }
